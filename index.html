@@ -7,41 +7,29 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #0f0f0f; color: #ffffff; text-align: center; margin: 0; padding: 10px; }
-        
-        /* Навігація */
         .tabs { display: flex; justify-content: center; margin-bottom: 20px; border-bottom: 1px solid #333; }
         .tab-btn { background: none; border: none; color: #888; padding: 12px 20px; cursor: pointer; font-size: 14px; font-weight: 600; text-transform: uppercase; transition: 0.3s; }
         .tab-btn.active { color: #e74c3c; border-bottom: 2px solid #e74c3c; }
-
-        /* Головний екран */
         .splash-screen { padding: 20px 0; }
         .splash-img { width: 90%; max-width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #333; }
         .main-title { font-size: 28px; font-weight: 800; margin: 20px 0 10px; letter-spacing: 1px; }
         .main-title span { color: #e74c3c; }
         .sub-text { color: #aaa; font-size: 14px; margin-bottom: 25px; }
-
-        /* Картка гри */
         .game-card { background: #1a1a1a; border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; text-align: left; }
         .game-card h2 { margin: 0 0 10px 0; font-size: 20px; color: #e74c3c; }
         .info-row { display: flex; align-items: center; margin: 5px 0; font-size: 15px; color: #ddd; }
-
-        /* Кнопки */
         .btn-group { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 20px; }
         .btn { flex: 1; padding: 14px 0; border-radius: 10px; border: none; cursor: pointer; font-weight: 700; font-size: 13px; text-transform: uppercase; transition: 0.2s; }
         .go { background: #27ae60; color: white; }
         .maybe { background: #f1c40f; color: #000; }
         .no { background: #c0392b; color: white; }
         .btn:active { transform: scale(0.96); }
-
-        /* Список гравців */
         .player-list { text-align: left; background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; min-height: 100px; }
         .list-header { color: #e74c3c; font-weight: 700; font-size: 16px; margin-bottom: 12px; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 8px; }
         .player-item { padding: 10px 0; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
-        .player-item a { color: #3498db; text-decoration: none; font-weight: 500; cursor: pointer; }
+        .player-item a { color: #3498db; text-decoration: none; font-weight: 500; }
         .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 5px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); }
         .reserve-divider { color: #888; text-align: center; padding: 15px 0 10px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-top: 1px dashed #444; margin-top: 10px; }
-
-        /* Історія */
         .history-item { text-align: left; padding: 12px; border-radius: 10px; margin-bottom: 10px; background: #1a1a1a; border: 1px solid #333; font-size: 14px; }
         .win-tag { color: #2ecc71; font-weight: bold; }
         .loss-tag { color: #e74c3c; font-weight: bold; }
@@ -108,19 +96,21 @@
             if(tab === 'history') loadHistory();
         }
 
-        // Функція для відкриття профілю через Telegram API
+        // Оновлена функція переходу
         function openProfile(username) {
-            if (username) {
-                // Видаляємо @ якщо він є, і формуємо посилання
-                const cleanUsername = username.replace('@', '');
-                tg.openTelegramLink('https://t.me/' + cleanUsername);
+            if (!username) return;
+            const cleanUser = username.replace('@', '').trim();
+            if (cleanUser) {
+                // Використовуємо прямий URL, який Telegram Mini App зазвичай перехоплює
+                tg.openTelegramLink('https://t.me/' + cleanUser);
             }
         }
 
         async function joinGame(status) {
             let user = tg.initDataUnsafe.user;
             let name = user ? (user.first_name + " " + (user.last_name || "")) : "Гість";
-            let username = user?.username || "";
+            let rawUsername = user?.username || "";
+            let username = rawUsername ? "@" + rawUsername : ""; 
             let id = String(user?.id || Date.now());
 
             document.getElementById('list').innerHTML = "Оновлення...";
@@ -132,10 +122,8 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({"ID": id, "Name": name, "Status": status, "Username": username})
                 });
-                
                 setTimeout(loadPlayers, 800);
             } catch (e) {
-                console.error("Помилка:", e);
                 loadPlayers();
             }
         }
@@ -148,7 +136,6 @@
                 list.innerHTML = "";
                 
                 let players = data.filter(p => p.Status !== 'НІ');
-                
                 if (players.length === 0) { 
                     list.innerHTML = "<div style='color:#666; text-align:center;'>Списку поки немає</div>"; 
                     return; 
@@ -160,16 +147,16 @@
 
                 sortedList.forEach((p, i) => {
                     let color = p.Status === 'ЙДУ' ? '#2ecc71' : '#f1c40f';
-                    let userRef = p.Username || "";
+                    let userRef = p.Username ? p.Username.replace('@', '') : "";
 
                     if (i === 15 || (p.Status === 'ДУМАЮ' && i === going.length && going.length > 0)) {
                         list.innerHTML += `<div class="reserve-divider">——— РЕЗЕРВ / ПІД ПИТАННЯМ ———</div>`;
                     }
 
-                    // Створюємо рядок гравця з функцією openProfile на кліку
+                    // Важливо: onclick має бути на самому посиланні
                     list.innerHTML += `
                         <div class="player-item">
-                            <span>${i+1}. <a onclick="openProfile('${userRef}')">${p.Name}</a></span>
+                            <span>${i+1}. <a href="javascript:void(0)" onclick="openProfile('${userRef}')">${p.Name}</a></span>
                             <span class="status-badge" style="color:${color}; border-color:${color}">${p.Status}</span>
                         </div>`;
                 });
@@ -184,9 +171,7 @@
                 let data = await res.json();
                 let hist = document.getElementById('history-list');
                 hist.innerHTML = "";
-                
                 if (data.length === 0) { hist.innerHTML = "Історія порожня"; return; }
-
                 data.reverse().forEach(h => {
                     let isWin = h.Result?.toLowerCase() === 'win';
                     let resText = isWin ? 'ПЕРЕМОГА' : 'ПОРАЗКА';
@@ -200,7 +185,6 @@
                 document.getElementById('history-list').innerHTML = "Помилка статистики";
             }
         }
-
         window.onload = loadPlayers;
     </script>
 </body>
