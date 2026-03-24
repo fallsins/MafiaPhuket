@@ -16,8 +16,9 @@
         .btn:active { transform: scale(0.95); }
         .divider { border-top: 2px dashed #555; margin: 20px 0; padding-top: 10px; color: #888; font-weight: bold; }
         .player-list { text-align: left; max-width: 350px; margin: 20px auto; background: #1e1e1e; padding: 15px; border-radius: 10px; }
-        .player-item { padding: 8px 0; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
-        .status-tag { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; border: 1px solid #444; }
+        .player-item { padding: 10px 0; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .player-item a { color: white; text-decoration: none; font-weight: 500; }
+        .status-tag { font-size: 0.8em; padding: 3px 8px; border-radius: 6px; border: 1px solid #444; }
     </style>
 </head>
 <body>
@@ -31,9 +32,9 @@
 
     <div id="game-screen" style="display:none;">
         <div class="card">
-            <h2>Субота, 19:00</h2>
-            <p>📍 Локація: Rawai</p>
-            <p>💰 Внесок: 500 THB</p>
+            <h2>Субота, 19:30</h2>
+            <p>📍 Локація: Ali BBQ Kathu</p>
+            <p>💰 Внесок: 100 THB</p>
         </div>
         
         <button class="btn go" onclick="joinGame('Йду')">✅ Я буду</button>
@@ -61,31 +62,31 @@
         async function joinGame(status) {
             let user = tg.initDataUnsafe.user;
             let name = user ? user.first_name + (user.last_name ? " " + user.last_name : "") : "Гравець";
+            let username = user && user.username ? user.username : "";
             let id = String(user ? user.id : "ID-" + Math.floor(Math.random() * 1000));
 
-            document.getElementById('list').innerText = "Обробка запису...";
+            document.getElementById('list').innerText = "Оновлення...";
 
             try {
-                // 1. Отримуємо поточний список, щоб знайти гравця за ID
                 let response = await fetch(API_URL);
                 let players = await response.json();
                 let existingPlayer = players.find(p => String(p.ID) === id);
 
+                let data = { 
+                    "Status": status, 
+                    "Timestamp": new Date().toLocaleString('uk-UA'),
+                    "Username": username // Зберігаємо юзернейм для лінку
+                };
+
                 if (existingPlayer) {
-                    // 2. Якщо гравець є - оновлюємо його статус (PATCH)
                     await fetch(`${API_URL}/ID/${id}`, {
                         method: 'PATCH',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ "Status": status, "Timestamp": new Date().toLocaleString('uk-UA') })
+                        body: JSON.stringify(data)
                     });
                 } else {
-                    // 3. Якщо немає - створюємо новий запис (POST)
-                    let data = {
-                        "ID": id,
-                        "Name": name,
-                        "Status": status,
-                        "Timestamp": new Date().toLocaleString('uk-UA')
-                    };
+                    data.ID = id;
+                    data.Name = name;
                     await fetch(API_URL, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -93,9 +94,8 @@
                     });
                 }
             } catch (error) {
-                console.error("Помилка при записі:", error);
+                console.error("Помилка:", error);
             }
-
             loadPlayers();
         }
 
@@ -103,7 +103,40 @@
             try {
                 let response = await fetch(API_URL);
                 let players = await response.json();
-                
-                // Фільтруємо тих, хто відмовився, і сортуємо за часом запису
                 let activePlayers = players.filter(p => p.Status !== "Не буду");
-                let listDiv = document
+                let listDiv = document.getElementById('list');
+                listDiv.innerHTML = "";
+
+                if (activePlayers.length === 0) {
+                    listDiv.innerHTML = "Поки ніхто не записався.";
+                    return;
+                }
+
+                activePlayers.forEach((p, index) => {
+                    if (index === 15) {
+                        let hr = document.createElement('div');
+                        hr.className = "divider";
+                        hr.innerText = "РЕЗЕРВ";
+                        listDiv.appendChild(hr);
+                    }
+
+                    let item = document.createElement('div');
+                    item.className = "player-item";
+                    
+                    // Створюємо посилання на ТГ, якщо є юзернейм, інакше просто ім'я
+                    let profileLink = p.Username ? `https://t.me/${p.Username}` : "#";
+                    let statusColor = p.Status === 'Йду' ? '#2ecc71' : '#f1c40f';
+                    
+                    item.innerHTML = `
+                        <a href="${profileLink}" target="_blank">${index + 1}. ${p.Name}</a>
+                        <span class="status-tag" style="color:${statusColor}">${p.Status}</span>
+                    `;
+                    listDiv.appendChild(item);
+                });
+            } catch (e) {
+                document.getElementById('list').innerText = "Помилка завантаження.";
+            }
+        }
+    </script>
+</body>
+</html>
