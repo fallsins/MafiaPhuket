@@ -17,7 +17,7 @@
         .divider { border-top: 2px dashed #555; margin: 20px 0; padding-top: 10px; color: #888; font-weight: bold; }
         .player-list { text-align: left; max-width: 350px; margin: 20px auto; background: #1e1e1e; padding: 15px; border-radius: 10px; }
         .player-item { padding: 8px 0; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
-        .status-tag { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; }
+        .status-tag { font-size: 0.8em; padding: 2px 6px; border-radius: 4px; border: 1px solid #444; }
     </style>
 </head>
 <body>
@@ -61,23 +61,40 @@
         async function joinGame(status) {
             let user = tg.initDataUnsafe.user;
             let name = user ? user.first_name + (user.last_name ? " " + user.last_name : "") : "Гравець";
-            let id = user ? user.id : "ID-" + Math.floor(Math.random() * 1000);
+            let id = String(user ? user.id : "ID-" + Math.floor(Math.random() * 1000));
 
-            let data = {
-                "ID": id,
-                "Name": name,
-                "Status": status,
-                "Timestamp": new Date().toLocaleString('uk-UA')
-            };
+            document.getElementById('list').innerText = "Обробка запису...";
 
-            // Показуємо лоадер
-            document.getElementById('list').innerText = "Записую тебе...";
+            try {
+                // 1. Отримуємо поточний список, щоб знайти гравця за ID
+                let response = await fetch(API_URL);
+                let players = await response.json();
+                let existingPlayer = players.find(p => String(p.ID) === id);
 
-            await fetch(API_URL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ data: [data] })
-            });
+                if (existingPlayer) {
+                    // 2. Якщо гравець є - оновлюємо його статус (PATCH)
+                    await fetch(`${API_URL}/ID/${id}`, {
+                        method: 'PATCH',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ "Status": status, "Timestamp": new Date().toLocaleString('uk-UA') })
+                    });
+                } else {
+                    // 3. Якщо немає - створюємо новий запис (POST)
+                    let data = {
+                        "ID": id,
+                        "Name": name,
+                        "Status": status,
+                        "Timestamp": new Date().toLocaleString('uk-UA')
+                    };
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ data: [data] })
+                    });
+                }
+            } catch (error) {
+                console.error("Помилка при записі:", error);
+            }
 
             loadPlayers();
         }
@@ -87,32 +104,6 @@
                 let response = await fetch(API_URL);
                 let players = await response.json();
                 
+                // Фільтруємо тих, хто відмовився, і сортуємо за часом запису
                 let activePlayers = players.filter(p => p.Status !== "Не буду");
-                let listDiv = document.getElementById('list');
-                listDiv.innerHTML = "";
-
-                if (activePlayers.length === 0) {
-                    listDiv.innerHTML = "Поки ніхто не записався. Будь першим!";
-                    return;
-                }
-
-                activePlayers.forEach((p, index) => {
-                    if (index === 15) {
-                        let hr = document.createElement('div');
-                        hr.className = "divider";
-                        hr.innerText = "ЧЕРГА / РЕЗЕРВ";
-                        listDiv.appendChild(hr);
-                    }
-
-                    let item = document.createElement('div');
-                    item.className = "player-item";
-                    item.innerHTML = `<span>${index + 1}. ${p.Name}</span> <span class="status-tag">${p.Status}</span>`;
-                    listDiv.appendChild(item);
-                });
-            } catch (e) {
-                document.getElementById('list').innerText = "Помилка завантаження даних.";
-            }
-        }
-    </script>
-</body>
-</html>
+                let listDiv = document
