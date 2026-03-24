@@ -37,7 +37,7 @@
         .player-list { text-align: left; background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; min-height: 100px; }
         .list-header { color: #e74c3c; font-weight: 700; font-size: 16px; margin-bottom: 12px; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 8px; }
         .player-item { padding: 10px 0; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
-        .player-item a { color: #3498db; text-decoration: none; font-weight: 500; }
+        .player-item a { color: #3498db; text-decoration: none; font-weight: 500; cursor: pointer; }
         .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 5px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); }
         .reserve-divider { color: #888; text-align: center; padding: 15px 0 10px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-top: 1px dashed #444; margin-top: 10px; }
 
@@ -90,7 +90,6 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Твоє посилання Apps Script
         const API_URL = "https://script.google.com/macros/s/AKfycbx78BBZhgPFEvWa1Nec7wItEEFAWtI8m6G4yCH8DY6oZAnGyGXfOw54LY8CdK09Z36nig/exec";
 
         function switchTab(tab) {
@@ -107,6 +106,15 @@
 
             if(tab === 'game') loadPlayers();
             if(tab === 'history') loadHistory();
+        }
+
+        // Функція для відкриття профілю через Telegram API
+        function openProfile(username) {
+            if (username) {
+                // Видаляємо @ якщо він є, і формуємо посилання
+                const cleanUsername = username.replace('@', '');
+                tg.openTelegramLink('https://t.me/' + cleanUsername);
+            }
         }
 
         async function joinGame(status) {
@@ -127,7 +135,7 @@
                 
                 setTimeout(loadPlayers, 800);
             } catch (e) {
-                console.error("Помилка запису:", e);
+                console.error("Помилка:", e);
                 loadPlayers();
             }
         }
@@ -151,21 +159,22 @@
                 let sortedList = [...going, ...maybe];
 
                 sortedList.forEach((p, i) => {
-                    // ТУТ ВИПРАВЛЕНО: Пряме відкриття профілю через tg://resolve
-                    let link = p.Username ? `tg://resolve?domain=${p.Username}` : "#";
                     let color = p.Status === 'ЙДУ' ? '#2ecc71' : '#f1c40f';
-                    
+                    let userRef = p.Username || "";
+
                     if (i === 15 || (p.Status === 'ДУМАЮ' && i === going.length && going.length > 0)) {
                         list.innerHTML += `<div class="reserve-divider">——— РЕЗЕРВ / ПІД ПИТАННЯМ ———</div>`;
                     }
 
-                    list.innerHTML += `<div class="player-item">
-                        <span>${i+1}. <a href="${link}">${p.Name}</a></span>
-                        <span class="status-badge" style="color:${color}; border-color:${color}">${p.Status}</span>
-                    </div>`;
+                    // Створюємо рядок гравця з функцією openProfile на кліку
+                    list.innerHTML += `
+                        <div class="player-item">
+                            <span>${i+1}. <a onclick="openProfile('${userRef}')">${p.Name}</a></span>
+                            <span class="status-badge" style="color:${color}; border-color:${color}">${p.Status}</span>
+                        </div>`;
                 });
             } catch (e) {
-                document.getElementById('list').innerHTML = "Помилка завантаження списку";
+                document.getElementById('list').innerHTML = "Помилка завантаження";
             }
         }
 
@@ -176,7 +185,7 @@
                 let hist = document.getElementById('history-list');
                 hist.innerHTML = "";
                 
-                if (data.length === 0) { hist.innerHTML = "Історія ігор порожня"; return; }
+                if (data.length === 0) { hist.innerHTML = "Історія порожня"; return; }
 
                 data.reverse().forEach(h => {
                     let isWin = h.Result?.toLowerCase() === 'win';
@@ -188,7 +197,7 @@
                     </div>`;
                 });
             } catch (e) {
-                document.getElementById('history-list').innerHTML = "Помилка завантаження статистики";
+                document.getElementById('history-list').innerHTML = "Помилка статистики";
             }
         }
 
