@@ -6,137 +6,100 @@
     <title>Mafia Phuket</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; text-align: center; margin: 0; padding: 20px; }
-        .card { background: #1e1e1e; border: 1px solid #333; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h1 { color: #e74c3c; text-transform: uppercase; letter-spacing: 2px; }
-        .btn { padding: 12px 20px; margin: 5px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; width: 80%; max-width: 300px; transition: 0.3s; }
+        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; text-align: center; margin: 0; padding: 10px; }
+        .tabs { display: flex; justify-content: center; margin-bottom: 15px; border-bottom: 1px solid #333; }
+        .tab-btn { background: none; border: none; color: #888; padding: 10px 20px; cursor: pointer; font-size: 16px; }
+        .tab-btn.active { color: #e74c3c; border-bottom: 2px solid #e74c3c; font-weight: bold; }
+        .card { background: #1e1e1e; border: 1px solid #333; padding: 15px; border-radius: 15px; margin-bottom: 15px; }
+        h2 { margin: 5px 0; color: #e74c3c; }
+        .btn { padding: 12px; margin: 5px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; width: 30%; font-size: 12px; }
         .go { background: #2ecc71; color: white; }
-        .maybe { background: #f1c40f; color: #000; }
+        .maybe { background: #f1c40f; }
         .no { background: #e74c3c; color: white; }
-        .btn:active { transform: scale(0.95); }
-        .divider { border-top: 2px dashed #555; margin: 20px 0; padding-top: 10px; color: #888; font-weight: bold; }
-        .player-list { text-align: left; max-width: 350px; margin: 20px auto; background: #1e1e1e; padding: 15px; border-radius: 10px; }
-        .player-item { padding: 10px 0; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .player-item a { color: white; text-decoration: none; font-weight: 500; }
-        .status-tag { font-size: 0.8em; padding: 3px 8px; border-radius: 6px; border: 1px solid #444; }
+        .player-list { text-align: left; background: #1e1e1e; padding: 10px; border-radius: 10px; margin-top: 10px; }
+        .player-item { padding: 8px 0; border-bottom: 1px solid #333; display: flex; justify-content: space-between; font-size: 14px; }
+        .player-item a { color: #3498db; text-decoration: none; }
+        .history-item { text-align: left; padding: 10px; border-bottom: 1px solid #333; font-size: 13px; }
+        .win { color: #2ecc71; } .loss { color: #e74c3c; }
     </style>
 </head>
 <body>
 
-    <div id="main-screen">
-        <div style="font-size: 50px;">🎭</div>
-        <h1>Mafia Phuket</h1>
-        <p>Клуб інтелектуальної гри</p>
-        <button class="btn go" onclick="showGame()">Увійти до запису</button>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('game')">Запис на гру</button>
+        <button class="tab-btn" onclick="switchTab('history')">Історія ігор</button>
     </div>
 
-    <div id="game-screen" style="display:none;">
+    <div id="game-tab">
         <div class="card">
             <h2>Субота, 19:30</h2>
-            <p>📍 Локація: Ali BBQ Kathu</p>
-            <p>💰 Внесок: 100 THB</p>
+            <p>📍 Ali BBQ Kathu | 💰 100 THB</p>
         </div>
-        
-        <button class="btn go" onclick="joinGame('Йду')">✅ Я буду</button>
-        <button class="btn maybe" onclick="joinGame('Думаю')">🤔 Не впевнений</button>
-        <button class="btn no" onclick="joinGame('Не буду')">❌ Не зможу</button>
+        <div style="display: flex; justify-content: center;">
+            <button class="btn go" onclick="joinGame('Йду')">Я БУДУ</button>
+            <button class="btn maybe" onclick="joinGame('ДУМАЮ')">ДУМАЮ</button>
+            <button class="btn no" onclick="joinGame('НІ')">НЕ ЙДУ</button>
+        </div>
+        <div class="player-list" id="list">Завантаження...</div>
+    </div>
 
-        <h3>Список учасників:</h3>
-        <div class="player-list" id="list">
-            Завантаження списку...
-        </div>
+    <div id="history-tab" style="display:none;">
+        <div id="history-list">Тут буде статистика...</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        
         let API_URL = "https://sheetdb.io/api/v1/pwmmhu038mp22";
 
-        function showGame() {
-            document.getElementById('main-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
-            loadPlayers();
+        function switchTab(tab) {
+            document.getElementById('game-tab').style.display = tab === 'game' ? 'block' : 'none';
+            document.getElementById('history-tab').style.display = tab === 'history' ? 'block' : 'none';
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            if(tab === 'history') loadHistory();
         }
 
         async function joinGame(status) {
             let user = tg.initDataUnsafe.user;
-            let name = user ? user.first_name + (user.last_name ? " " + user.last_name : "") : "Гравець";
-            let username = user && user.username ? user.username : "";
-            let id = String(user ? user.id : "ID-" + Math.floor(Math.random() * 1000));
+            let name = user ? (user.first_name + " " + (user.last_name || "")) : "Тестовий Гравець";
+            let username = user?.username || "";
+            let id = String(user?.id || "12345");
 
-            document.getElementById('list').innerText = "Оновлення...";
-
-            try {
-                let response = await fetch(API_URL);
-                let players = await response.json();
-                let existingPlayer = players.find(p => String(p.ID) === id);
-
-                let data = { 
-                    "Status": status, 
-                    "Timestamp": new Date().toLocaleString('uk-UA'),
-                    "Username": username // Зберігаємо юзернейм для лінку
-                };
-
-                if (existingPlayer) {
-                    await fetch(`${API_URL}/ID/${id}`, {
-                        method: 'PATCH',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(data)
-                    });
-                } else {
-                    data.ID = id;
-                    data.Name = name;
-                    await fetch(API_URL, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ data: [data] })
-                    });
-                }
-            } catch (error) {
-                console.error("Помилка:", error);
+            await fetch(`${API_URL}/ID/${id}`, { method: 'DELETE' }); // Перезапис
+            if (status !== 'НІ') {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ data: [{"ID": id, "Name": name, "Status": status, "Username": username}] })
+                });
             }
             loadPlayers();
         }
 
         async function loadPlayers() {
-            try {
-                let response = await fetch(API_URL);
-                let players = await response.json();
-                let activePlayers = players.filter(p => p.Status !== "Не буду");
-                let listDiv = document.getElementById('list');
-                listDiv.innerHTML = "";
-
-                if (activePlayers.length === 0) {
-                    listDiv.innerHTML = "Поки ніхто не записався.";
-                    return;
-                }
-
-                activePlayers.forEach((p, index) => {
-                    if (index === 15) {
-                        let hr = document.createElement('div');
-                        hr.className = "divider";
-                        hr.innerText = "РЕЗЕРВ";
-                        listDiv.appendChild(hr);
-                    }
-
-                    let item = document.createElement('div');
-                    item.className = "player-item";
-                    
-                    // Створюємо посилання на ТГ, якщо є юзернейм, інакше просто ім'я
-                    let profileLink = p.Username ? `https://t.me/${p.Username}` : "#";
-                    let statusColor = p.Status === 'Йду' ? '#2ecc71' : '#f1c40f';
-                    
-                    item.innerHTML = `
-                        <a href="${profileLink}" target="_blank">${index + 1}. ${p.Name}</a>
-                        <span class="status-tag" style="color:${statusColor}">${p.Status}</span>
-                    `;
-                    listDiv.appendChild(item);
-                });
-            } catch (e) {
-                document.getElementById('list').innerText = "Помилка завантаження.";
-            }
+            let res = await fetch(API_URL);
+            let data = await res.json();
+            let list = document.getElementById('list');
+            list.innerHTML = "<b>Список гравців:</b><br>";
+            data.filter(p => p.Status !== 'НІ').forEach((p, i) => {
+                let link = p.Username ? `https://t.me/${p.Username}` : "#";
+                list.innerHTML += `<div class="player-item"><span>${i+1}. <a href="${link}">${p.Name}</a></span> <span>${p.Status}</span></div>`;
+            });
         }
+
+        async function loadHistory() {
+            let res = await fetch(API_URL + "?sheet=History");
+            let data = await res.json();
+            let hist = document.getElementById('history-list');
+            hist.innerHTML = "";
+            data.reverse().forEach(h => {
+                let resClass = h.Result === 'Win' ? 'win' : 'loss';
+                hist.innerHTML += `<div class="history-item"><b>${h.Date}</b>: ${h.Player_Name} (${h.Role}) - <span class="${resClass}">${h.Result}</span></div>`;
+            });
+        }
+
+        loadPlayers();
     </script>
 </body>
 </html>
