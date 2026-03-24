@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MAFIA PHUKET | PRIVATE SOCIETY</title>
+    <title>MAFIA PHUKET | EXCLUSIVE</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
 
@@ -142,7 +142,7 @@
     <div id="splash-tab" class="page active">
         <img src="mafia.jpg" class="splash-img">
         <h1 class="main-title">MAFIA <span>PHUKET</span></h1>
-        <p style="color: var(--text-dim); font-size: 10px; letter-spacing: 5px; text-transform: uppercase; margin: 15px 0 40px;">Private Game Society</p>
+        <p style="color: var(--text-dim); font-size: 10px; letter-spacing: 5px; text-transform: uppercase; margin: 15px 0 40px;">Інтелектуально-соціальна гра</p>
         <button class="btn go" onclick="switchTab('game', 1)">Долучитись до гри</button>
     </div>
 
@@ -222,7 +222,6 @@
                 if (going.length > 0) {
                     html += `<div class="list-section-title">Підтвердили</div>`;
                     going.forEach((p, i) => {
-                        // Безпечне отримання ініціалів
                         let initials = p.Name.split(' ').filter(n => n).map(n => Array.from(n)[0]).join('').toUpperCase().substring(0, 2);
                         html += `<div class="player-item status-confirmed" style="animation-delay: ${i * 0.05}s">
                                     <div class="avatar-stub">${initials}</div>
@@ -243,7 +242,7 @@
                 }
 
                 list.innerHTML = html || "<div style='color:#444; padding:40px; text-align:center;'>Список порожній</div>";
-            } catch (e) { list.innerHTML = "Помилка завантаження..."; }
+            } catch (e) { list.innerHTML = "Помилка..."; }
         }
         window.onload = () => document.getElementById('indicator').style.transform = `translateX(0%)`;
     </script>
