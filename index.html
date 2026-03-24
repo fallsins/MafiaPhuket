@@ -3,48 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mafia Phuket</title>
+    <title>MAFIA PHUKET / GANG WAR</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; text-align: center; margin: 0; padding: 10px; }
-        .tabs { display: flex; justify-content: center; margin-bottom: 15px; border-bottom: 1px solid #333; }
-        .tab-btn { background: none; border: none; color: #888; padding: 10px 20px; cursor: pointer; font-size: 16px; }
-        .tab-btn.active { color: #e74c3c; border-bottom: 2px solid #e74c3c; font-weight: bold; }
-        .card { background: #1e1e1e; border: 1px solid #333; padding: 15px; border-radius: 15px; margin-bottom: 15px; }
-        h2 { margin: 5px 0; color: #e74c3c; }
-        .btn { padding: 12px; margin: 5px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; width: 30%; font-size: 12px; }
+        /* Підключаємо крутий шрифт Mafia для заголовка */
+        @font-face {
+            font-family: 'MafiaFont';
+            src: url('https://fonts.cdnfonts.com/s/17223/mafia.woff') format('woff');
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: #080808; color: #fff; text-align: center; margin: 0; padding: 10px; }
+        .tabs { display: flex; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #333; }
+        .tab-btn { background: none; border: none; color: #777; padding: 12px 25px; cursor: pointer; font-size: 14px; text-transform: uppercase; font-weight: bold; }
+        .tab-btn.active { color: #e74c3c; border-bottom: 3px solid #e74c3c; }
+
+        .splash-screen { padding: 40px 0; }
+        .splash-img { width: 100%; max-width: 320px; border-radius: 20px; border: 3px solid #e74c3c; box-shadow: 0 0 30px rgba(231, 76, 60, 0.4); }
+        .main-title { font-family: 'MafiaFont', sans-serif; font-size: 36px; color: #e74c3c; margin: 15px 0; letter-spacing: 3px; }
+        .main-title span { color: #fff; }
+
+        .game-card { background: #1a1a1a; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #333; }
+        h2 { font-size: 24px; color: #fff; margin: 10px 0; }
+        h2 span { color: #e74c3c; }
+
+        .btn { padding: 14px; margin: 8px 4px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; width: 30%; font-size: 14px; text-transform: uppercase; transition: 0.3s; }
         .go { background: #2ecc71; color: white; }
-        .maybe { background: #f1c40f; }
+        .maybe { background: #f1c40f; color: #000; }
         .no { background: #e74c3c; color: white; }
-        .player-list { text-align: left; background: #1e1e1e; padding: 10px; border-radius: 10px; margin-top: 10px; }
-        .player-item { padding: 8px 0; border-bottom: 1px solid #333; display: flex; justify-content: space-between; font-size: 14px; }
-        .player-item a { color: #3498db; text-decoration: none; }
-        .history-item { text-align: left; padding: 10px; border-bottom: 1px solid #333; font-size: 13px; }
-        .win { color: #2ecc71; } .loss { color: #e74c3c; }
+        .go:hover { box-shadow: 0 0 20px rgba(46, 204, 113, 0.6); }
+
+        .player-list { text-align: left; background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; margin-top: 15px; }
+        .list-header { color: #e74c3c; font-weight: bold; font-size: 18px; border-bottom: 2px solid #333; padding-bottom: 8px; margin-bottom: 8px; }
+        .player-item { padding: 12px 0; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; font-size: 14px; }
+        .player-item a { color: #3498db; text-decoration: none; font-weight: 500; }
+        .player-item a:hover { color: #fff; }
+
+        .history-item { text-align: left; padding: 12px; border: 1px solid #2a2a2a; border-radius: 10px; margin-bottom: 10px; font-size: 13px; background: #1a1a1a; }
+        .hist-date { color: #e74c3c; font-weight: bold; }
+        .win { color: #2ecc71; font-weight: bold; } .loss { color: #e74c3c; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('game')">Запис на гру</button>
-        <button class="tab-btn" onclick="switchTab('history')">Історія ігор</button>
+        <button class="tab-btn active" onclick="switchTab('splash')">Зайти</button>
+        <button class="tab-btn" onclick="switchTab('game')">Запис</button>
+        <button class="tab-btn" onclick="switchTab('history')">Стата</button>
     </div>
 
-    <div id="game-tab">
-        <div class="card">
-            <h2>Субота, 19:30</h2>
-            <p>📍 Ali BBQ Kathu | 💰 100 THB</p>
+    <div id="splash-tab" class="splash-screen">
+        <img src="mafia.jpg" class="splash-img" alt="MAFIA">
+        <h1 class="main-title">MAFIA <span>PHUKET</span></h1>
+        <p>Клуб інтелектуального «кілерства».</p>
+        <p>Вхід тільки для своїх.</p>
+        <button class="btn go" onclick="switchTab('game')">Перейти до запису</button>
+    </div>
+
+    <div id="game-tab" style="display:none;">
+        <div class="game-card">
+            <h2>GANG WAR / <span>СУБОТА</span></h2>
+            <p>Час: 19:30 | Місце: Ali BBQ Kathu</p>
+            <p>Вхідний квиток: 100 THB</p>
         </div>
         <div style="display: flex; justify-content: center;">
-            <button class="btn go" onclick="joinGame('Йду')">Я БУДУ</button>
+            <button class="btn go" onclick="joinGame('ЙДУ')">Я БУДУ</button>
             <button class="btn maybe" onclick="joinGame('ДУМАЮ')">ДУМАЮ</button>
-            <button class="btn no" onclick="joinGame('НІ')">НЕ ЙДУ</button>
+            <button class="btn no" onclick="joinGame('НІ')">НЕ МОЖУ</button>
         </div>
-        <div class="player-list" id="list">Завантаження...</div>
+        <div class="player-list">
+            <div class="list-header">УЧАСНИКИ GANG WAR:</div>
+            <div id="list">Завантаження...</div>
+        </div>
     </div>
 
     <div id="history-tab" style="display:none;">
-        <div id="history-list">Тут буде статистика...</div>
+        <div id="history-list">Завантаження статистики...</div>
     </div>
 
     <script>
@@ -53,11 +86,13 @@
         let API_URL = "https://sheetdb.io/api/v1/pwmmhu038mp22";
 
         function switchTab(tab) {
+            document.getElementById('splash-tab').style.display = tab === 'splash' ? 'block' : 'none';
             document.getElementById('game-tab').style.display = tab === 'game' ? 'block' : 'none';
             document.getElementById('history-tab').style.display = tab === 'history' ? 'block' : 'none';
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            if(tab === 'history') loadHistory();
+            if(tab === 'splash') document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            if(tab === 'game') { document.querySelectorAll('.tab-btn')[1].classList.add('active'); loadPlayers(); }
+            if(tab === 'history') { document.querySelectorAll('.tab-btn')[2].classList.add('active'); loadHistory(); }
         }
 
         async function joinGame(status) {
@@ -66,7 +101,8 @@
             let username = user?.username || "";
             let id = String(user?.id || "12345");
 
-            await fetch(`${API_URL}/ID/${id}`, { method: 'DELETE' }); // Перезапис
+            // Перезапис: видаляємо і створюємо новий рядок (простіше для рейтингу)
+            await fetch(`${API_URL}/ID/${id}`, { method: 'DELETE' });
             if (status !== 'НІ') {
                 await fetch(API_URL, {
                     method: 'POST',
@@ -81,10 +117,11 @@
             let res = await fetch(API_URL);
             let data = await res.json();
             let list = document.getElementById('list');
-            list.innerHTML = "<b>Список гравців:</b><br>";
+            list.innerHTML = "";
             data.filter(p => p.Status !== 'НІ').forEach((p, i) => {
                 let link = p.Username ? `https://t.me/${p.Username}` : "#";
-                list.innerHTML += `<div class="player-item"><span>${i+1}. <a href="${link}">${p.Name}</a></span> <span>${p.Status}</span></div>`;
+                let statusColor = p.Status === 'ЙДУ' ? '#2ecc71' : '#f1c40f';
+                list.innerHTML += `<div class="player-item"><span>${i+1}. <a href="${link}" target="_blank">${p.Name}</a></span> <span style="color:${statusColor}">${p.Status}</span></div>`;
             });
         }
 
@@ -95,11 +132,9 @@
             hist.innerHTML = "";
             data.reverse().forEach(h => {
                 let resClass = h.Result === 'Win' ? 'win' : 'loss';
-                hist.innerHTML += `<div class="history-item"><b>${h.Date}</b>: ${h.Player_Name} (${h.Role}) - <span class="${resClass}">${h.Result}</span></div>`;
+                hist.innerHTML += `<div class="history-item"><span class="hist-date">${h.Date}</span>: ${h.Player_Name} (${h.Role}) — <span class="${resClass}">${h.Result}</span></div>`;
             });
         }
-
-        loadPlayers();
     </script>
 </body>
 </html>
