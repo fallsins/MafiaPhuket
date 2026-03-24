@@ -12,7 +12,7 @@
             --accent: #C1121F;
             --maybe-color: #d4a017;
             --bg: #0a0a0a;
-            --card: rgba(20, 20, 20, 0.7); /* Напівпрозорий для скла */
+            --card: rgba(20, 20, 20, 0.7);
             --text-main: #ffffff;
             --text-dim: #666;
             --border: rgba(255, 255, 255, 0.1);
@@ -27,7 +27,7 @@
             overflow-x: hidden;
         }
 
-        /* --- GRAIN OVERLAY (Ефект преміальної текстури) --- */
+        /* GRAIN OVERLAY */
         body::before {
             content: "";
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -38,13 +38,15 @@
         /* ТАБИ */
         .tabs { 
             display: flex; justify-content: center; position: sticky; top: 0; z-index: 100;
-            background: rgba(10,10,10,0.8); backdrop-filter: blur(20px);
+            background: rgba(10,10,10,0.85); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border); margin-bottom: 30px;
+            position: relative;
         }
         .tab-btn { 
             flex: 1; background: none; border: none; color: var(--text-dim); 
             padding: 15px 0; font-size: 11px; font-weight: 800; 
             text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; 
+            cursor: pointer;
         }
         .tab-btn.active { color: var(--text-main); }
         .tab-indicator {
@@ -54,10 +56,7 @@
         }
 
         /* СТОРІНКИ */
-        .page {
-            display: none; flex-direction: column; align-items: center;
-            width: 100%; text-align: center;
-        }
+        .page { display: none; flex-direction: column; align-items: center; width: 100%; }
         .page.active { display: flex; animation: pageIn 0.5s ease forwards; }
 
         @keyframes pageIn {
@@ -79,7 +78,7 @@
         .main-title { font-family: 'Playfair Display', serif; font-size: 42px; margin: 0; letter-spacing: -1px; }
         .main-title span { color: var(--accent); }
 
-        /* КАРТКА ГРИ (Glassmorphism) */
+        /* КАРТКА ГРИ */
         .game-card { 
             background: var(--card); backdrop-filter: blur(15px);
             border-radius: 16px; padding: 25px; 
@@ -99,7 +98,6 @@
         .btn.go { background: var(--accent); color: white; box-shadow: 0 8px 20px rgba(193, 18, 31, 0.2); }
         .btn.maybe { background: transparent; border: 1px solid #333; color: #aaa; }
         .btn.no { background: transparent; color: #444; font-size: 10px; margin-top: 5px; letter-spacing: 3px; }
-        .btn:active { transform: scale(0.96); }
 
         /* СПИСОК ГРАВЦІВ */
         .player-list { text-align: left; width: 100%; margin-top: 20px; }
@@ -124,12 +122,12 @@
             background: linear-gradient(135deg, #1a1a1a 0%, #050505 100%);
             border: 1px solid var(--border); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 10px; font-weight: 800; color: var(--text-dim);
+            font-size: 11px; font-weight: 800; color: var(--text-dim);
         }
         .status-confirmed .avatar-stub { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(193, 18, 31, 0.2); }
         .status-maybe .avatar-stub { border-color: var(--maybe-color); color: var(--maybe-color); }
         .player-name { font-weight: 400; font-size: 15px; flex-grow: 1; letter-spacing: 0.3px; }
-        .player-name a { color: inherit; text-decoration: none; }
+        .player-name a { color: inherit; text-decoration: none; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -151,15 +149,15 @@
     <div id="game-tab" class="page">
         <div class="game-card">
             <div style="margin-bottom:20px;">
-                <div class="info-label">Time</div>
-                <div class="info-value">Saturday · 19:30</div>
+                <div class="info-label">Час</div>
+                <div class="info-value">Субота · 19:30</div>
             </div>
             <div style="margin-bottom:20px;">
-                <div class="info-label">Location</div>
+                <div class="info-label">Локація</div>
                 <div class="info-value">Ali BBQ Kathu</div>
             </div>
             <div>
-                <div class="info-label">Buy-in</div>
+                <div class="info-label">Внесок</div>
                 <div class="info-value">100 THB</div>
             </div>
         </div>
@@ -175,7 +173,9 @@
     </div>
 
     <div id="history-tab" class="page">
-        <div style="padding: 100px 0; color: var(--text-dim); font-size: 10px; letter-spacing: 4px; text-transform: uppercase;">Рейтинг сезону <br><span style="color:var(--accent)">Незабаром</span></div>
+        <div style="padding: 100px 0; color: var(--text-dim); font-size: 10px; letter-spacing: 4px; text-transform: uppercase;">
+            Рейтинг сезону <br><span style="color:var(--accent)">Незабаром</span>
+        </div>
     </div>
 
     <script>
@@ -203,7 +203,7 @@
                     Username: user?.username ? "@" + user.username : ""
                 })
             });
-            setTimeout(loadPlayers, 500);
+            setTimeout(loadPlayers, 800);
         }
 
         async function loadPlayers() {
@@ -215,14 +215,15 @@
                 let maybe = data.filter(p => p.Status === 'ДУМАЮ');
                 
                 let html = `<div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:2px; margin-bottom:20px;">
-                                <span>Players</span>
+                                <span>Гравці</span>
                                 <span style="color:var(--accent)">${going.length} / 15</span>
                             </div>`;
 
                 if (going.length > 0) {
-                    html += `<div class="list-section-title">Confirmed</div>`;
+                    html += `<div class="list-section-title">Підтвердили</div>`;
                     going.forEach((p, i) => {
-                        let initials = p.Name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                        // Безпечне отримання ініціалів
+                        let initials = p.Name.split(' ').filter(n => n).map(n => Array.from(n)[0]).join('').toUpperCase().substring(0, 2);
                         html += `<div class="player-item status-confirmed" style="animation-delay: ${i * 0.05}s">
                                     <div class="avatar-stub">${initials}</div>
                                     <div class="player-name"><a onclick="tg.openTelegramLink('https://t.me/${p.Username.replace('@','')}')">${p.Name}</a></div>
@@ -231,9 +232,9 @@
                 }
 
                 if (maybe.length > 0) {
-                    html += `<div class="list-section-title" style="border-color:var(--maybe-color)">Pending</div>`;
+                    html += `<div class="list-section-title" style="border-color:var(--maybe-color)">У роздумах</div>`;
                     maybe.forEach((p, i) => {
-                        let initials = p.Name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                        let initials = p.Name.split(' ').filter(n => n).map(n => Array.from(n)[0]).join('').toUpperCase().substring(0, 2);
                         html += `<div class="player-item status-maybe" style="animation-delay: ${(going.length + i) * 0.05}s">
                                     <div class="avatar-stub">${initials}</div>
                                     <div class="player-name"><a>${p.Name}</a></div>
@@ -241,8 +242,8 @@
                     });
                 }
 
-                list.innerHTML = html || "<div style='color:#444; padding:20px;'>Список порожній</div>";
-            } catch (e) { list.innerHTML = "Error loading..."; }
+                list.innerHTML = html || "<div style='color:#444; padding:40px; text-align:center;'>Список порожній</div>";
+            } catch (e) { list.innerHTML = "Помилка завантаження..."; }
         }
         window.onload = () => document.getElementById('indicator').style.transform = `translateX(0%)`;
     </script>
