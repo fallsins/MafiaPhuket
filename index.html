@@ -37,9 +37,9 @@
         .player-list { text-align: left; background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; min-height: 100px; }
         .list-header { color: #e74c3c; font-weight: 700; font-size: 16px; margin-bottom: 12px; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 8px; }
         .player-item { padding: 10px 0; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
-        .player-item a { color: #3498db; text-decoration: none; }
+        .player-item a { color: #3498db; text-decoration: none; font-weight: 500; }
         .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 5px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); }
-        .reserve-divider { color: #888; text-align: center; padding: 15px 0 10px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-top: 1px dashed #444; margin-top: 10px; }
+        .reserve-divider { color: #888; text-align: center; padding: 15px 0 10px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-top: 1px dashed #444; margin-top: 10px; }
 
         /* Історія */
         .history-item { text-align: left; padding: 12px; border-radius: 10px; margin-bottom: 10px; background: #1a1a1a; border: 1px solid #333; font-size: 14px; }
@@ -90,7 +90,7 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        // Твоє нове посилання Apps Script
+        // Твоє посилання Apps Script
         const API_URL = "https://script.google.com/macros/s/AKfycbwbMS8GY4p3Q9KDDUbyVD9pPVDmYUUxd5CKeLH6EeAbUrbPM8DXhJP44WC4WQUzxH4hhQ/exec";
 
         function switchTab(tab) {
@@ -115,7 +115,6 @@
             let username = user?.username || "";
             let id = String(user?.id || Date.now());
 
-            // Показуємо завантаження
             document.getElementById('list').innerHTML = "Оновлення...";
 
             try {
@@ -126,7 +125,6 @@
                     body: JSON.stringify({"ID": id, "Name": name, "Status": status, "Username": username})
                 });
                 
-                // Невелика пауза, щоб Google встиг обробити запис
                 setTimeout(loadPlayers, 800);
             } catch (e) {
                 console.error("Помилка запису:", e);
@@ -141,7 +139,6 @@
                 let list = document.getElementById('list');
                 list.innerHTML = "";
                 
-                // Фільтруємо тих, хто не йде
                 let players = data.filter(p => p.Status !== 'НІ');
                 
                 if (players.length === 0) { 
@@ -149,22 +146,21 @@
                     return; 
                 }
 
-                // Сортуємо: спочатку "ЙДУ", потім "ДУМАЮ"
                 let going = players.filter(p => p.Status === 'ЙДУ');
                 let maybe = players.filter(p => p.Status === 'ДУМАЮ');
                 let sortedList = [...going, ...maybe];
 
                 sortedList.forEach((p, i) => {
-                    let link = p.Username ? `https://t.me/${p.Username}` : "#";
+                    // ТУТ ВИПРАВЛЕНО: Пряме відкриття профілю через tg://resolve
+                    let link = p.Username ? `tg://resolve?domain=${p.Username}` : "#";
                     let color = p.Status === 'ЙДУ' ? '#2ecc71' : '#f1c40f';
                     
-                    // Додаємо риску резерву після 15-го гравця АБО перед першим "ДУМАЮ"
                     if (i === 15 || (p.Status === 'ДУМАЮ' && i === going.length && going.length > 0)) {
                         list.innerHTML += `<div class="reserve-divider">——— РЕЗЕРВ / ПІД ПИТАННЯМ ———</div>`;
                     }
 
                     list.innerHTML += `<div class="player-item">
-                        <span>${i+1}. <a href="${link}" target="_blank">${p.Name}</a></span>
+                        <span>${i+1}. <a href="${link}">${p.Name}</a></span>
                         <span class="status-badge" style="color:${color}; border-color:${color}">${p.Status}</span>
                     </div>`;
                 });
@@ -196,7 +192,6 @@
             }
         }
 
-        // Початкове завантаження
         window.onload = loadPlayers;
     </script>
 </body>
