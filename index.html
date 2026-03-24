@@ -3,225 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MAFIA PHUKET | PREMIERE CLUB</title>
+    <title>MAFIA PHUKET | EXCLUSIVE</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
 
     <style>
-        /* --- ОСНОВНІ СТИЛІ (ПРЕМІУМ-НУАР) --- */
         body { 
-            font-family: 'Roboto', sans-serif; 
-            /* Глибокий винно-чорний градієнт */
-            background: radial-gradient(circle at center, #1a0505 0%, #000000 100%); 
+            font-family: 'Montserrat', sans-serif; 
+            background: radial-gradient(circle at center, #1c1c1c 0%, #0a0a0a 100%); 
             color: #ffffff; 
             text-align: center; 
             margin: 0; 
             padding: 10px; 
-            overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- НАВІГАЦІЯ (VIP ЛАУНДЖ) --- */
+        /* ТАБИ */
         .tabs { 
             display: flex; 
             justify-content: center; 
-            margin-bottom: 25px; 
-            border-bottom: 1px solid #2a2a2a; 
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            margin-bottom: 20px; 
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid #333;
+            position: sticky; top: 0; z-index: 100;
         }
         .tab-btn { 
-            background: none; 
-            border: none; 
-            color: #666; 
-            padding: 15px 25px; 
-            cursor: pointer; 
-            font-size: 13px; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-            transition: 0.4s; 
+            background: none; border: none; color: #777; 
+            padding: 15px 20px; font-size: 12px; font-weight: 800; 
+            text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; 
         }
-        .tab-btn.active { 
-            color: #e74c3c; 
-            border-bottom: 2px solid #e74c3c; 
-            text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
-        }
+        .tab-btn.active { color: #ff4d4d; border-bottom: 2px solid #ff4d4d; }
 
-        /* --- ГОЛОВНИЙ ЕКРАН (WELCOME SCREEN) --- */
-        .splash-screen { padding: 30px 0; }
-        .splash-img { 
-            width: 85%; 
-            max-width: 320px; 
-            border-radius: 20px; 
-            /* Ефект задимленого скла */
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9); 
-            border: 1px solid #2a2a2a;
-            filter: grayscale(0.2);
-            transition: 0.5s;
-        }
-        
-        .main-title { 
-            font-family: 'Playfair Display', serif; /* Serif шрифт */
-            font-size: 36px; 
-            font-weight: 900; 
-            margin: 25px 0 10px; 
-            letter-spacing: 4px; /* Великий відступ */
-            text-transform: uppercase;
-        }
-        .main-title span { 
-            color: #e74c3c; 
-            /* М'яке неонове світіння */
-            text-shadow: 0 0 20px rgba(231, 76, 60, 0.6); 
-        }
-        .sub-text { 
-            color: #888; 
-            font-size: 14px; 
-            font-weight: 400;
-            letter-spacing: 1px;
-            margin-bottom: 35px; 
-        }
+        /* ГОЛОВНА */
+        .splash-screen { padding: 20px 0; animation: fadeIn 0.8s ease-in; }
+        .splash-img { width: 85%; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        .main-title { font-family: 'Playfair Display', serif; font-size: 38px; margin: 20px 0 5px; letter-spacing: 2px; }
+        .main-title span { color: #ff4d4d; text-shadow: 0 0 15px rgba(255, 77, 77, 0.4); }
+        .sub-text { color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
 
-        /* --- КАРТКА ГРИ (VIP ИНФО) --- */
+        /* КАРТКА ГРИ */
         .game-card { 
-            background: rgba(26, 26, 26, 0.6); 
-            backdrop-filter: blur(10px);
-            border-radius: 20px; 
-            padding: 25px; 
-            margin-bottom: 25px; 
-            border: 1px solid #2a2a2a; 
-            text-align: left; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: #141414; border-radius: 15px; padding: 20px; 
+            margin-bottom: 20px; border: 1px solid #252525; text-align: left;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         .game-card h2 { 
-            font-family: 'Playfair Display', serif;
-            margin: 0 0 15px 0; 
-            font-size: 22px; 
-            color: #e74c3c; 
-            letter-spacing: 1px;
+            font-size: 14px; text-transform: uppercase; letter-spacing: 2px;
+            color: #ff4d4d; margin: 0 0 15px 0; font-weight: 800;
         }
-        .info-row { display: flex; align-items: center; margin: 8px 0; font-size: 15px; color: #ccc; }
+        .info-row { display: flex; align-items: center; margin: 10px 0; font-size: 16px; font-weight: 600; color: #eee; }
 
-        /* --- КНОПКИ (НЕОН ТА ПРЕМІУМ) --- */
-        .btn-group { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 25px; }
+        /* КНОПКИ */
+        .btn-group { display: flex; gap: 10px; margin-bottom: 25px; }
         .btn { 
-            flex: 1; 
-            padding: 16px 0; 
-            border-radius: 12px; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: 700; 
-            font-size: 13px; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            flex: 1; padding: 18px 0; border-radius: 12px; border: none; 
+            font-weight: 800; font-size: 12px; text-transform: uppercase; 
+            letter-spacing: 1px; transition: 0.2s; 
         }
-        
-        /* Кнопка "Перейти до запису" - Чорна з червоним неоном */
-        .splash-screen .btn.go {
-            background: transparent;
-            border: 2px solid #e74c3c;
-            color: #e74c3c;
-            box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
-            width: 100%;
-            max-width: 280px;
-        }
-        .splash-screen .btn.go:active {
-            background: #e74c3c;
-            color: #fff;
-            box-shadow: 0 0 25px rgba(231, 76, 60, 0.7);
-        }
+        .splash-screen .btn.go { background: transparent; border: 2px solid #ff4d4d; color: #ff4d4d; width: 100%; max-width: 250px; }
+        .btn.go { background: #27ae60; color: white; }
+        .btn.maybe { background: #f1c40f; color: #000; }
+        .btn.no { background: #c0392b; color: white; }
+        .btn:active { transform: scale(0.95); }
 
-        /* Кнопки статусу - Глибокі кольори */
-        .btn.go { background: #1e8449; color: white; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); }
-        .btn.maybe { background: #d4ac0d; color: #000; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3); }
-        .btn.no { background: #a93226; color: white; box-shadow: 0 4px 15px rgba(192, 57, 43, 0.3); }
-        .btn:active { transform: scale(0.95); opacity: 0.9; }
-
-        /* --- СПИСОК ГРАВЦІВ (ЧИСТИЙ ПРЕМІУМ) --- */
+        /* СПИСОК */
         .player-list { 
-            text-align: left; 
-            background: rgba(26, 26, 26, 0.8); 
-            padding: 20px; 
-            border-radius: 20px; 
-            border: 1px solid #2a2a2a; 
-            min-height: 100px; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            background: #141414; padding: 20px; border-radius: 20px; 
+            border: 1px solid #252525; text-align: left;
         }
         .list-header { 
-            color: #e74c3c; 
-            font-weight: 700; 
-            font-size: 16px; 
-            margin-bottom: 15px; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-            border-bottom: 1px solid #333; 
-            padding-bottom: 10px; 
+            font-size: 13px; font-weight: 800; color: #666; 
+            text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px;
         }
         .player-item { 
-            padding: 12px 0; 
-            border-bottom: 1px solid #252525; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
+            padding: 12px 0; border-bottom: 1px solid #1a1a1a; 
+            display: flex; justify-content: space-between; align-items: center; 
         }
-        .player-item a { color: #3498db; text-decoration: none; font-weight: 500; cursor: pointer; transition: 0.2s; }
-        .player-item a:active { color: #fff; }
-        
-        .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.05); }
-        .reserve-divider { color: #555; text-align: center; padding: 20px 0 10px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; border-top: 1px dashed #333; margin-top: 15px; }
+        .player-item span { font-weight: 600; font-size: 15px; }
+        .player-item a { color: #4da6ff; text-decoration: none; }
+        .status-badge { 
+            font-size: 9px; padding: 5px 10px; border-radius: 6px; 
+            font-weight: 900; border: 1px solid rgba(255,255,255,0.1); text-transform: uppercase;
+        }
+        .reserve-divider { 
+            color: #444; text-align: center; padding: 20px 0; 
+            font-size: 10px; font-weight: 800; letter-spacing: 3px;
+        }
 
-        /* --- ІСТОРІЯ (ЕЛЕГАНТНІ КАРТКИ) --- */
+        /* ІСТОРІЯ */
         .history-item { 
-            text-align: left; 
-            padding: 15px; 
-            border-radius: 12px; 
-            margin-bottom: 12px; 
-            background: rgba(26, 26, 26, 0.6); 
-            border: 1px solid #2a2a2a; 
-            font-size: 14px; 
-            transition: 0.3s;
+            background: #141414; padding: 15px; border-radius: 12px; 
+            border: 1px solid #252525; margin-bottom: 10px; text-align: left;
         }
-        .win-tag { color: #2ecc71; font-weight: bold; text-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
-        .loss-tag { color: #e74c3c; font-weight: bold; }
 
-        /* --- АНІМАЦІЇ ПОЯВИ --- */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translate3d(0, 20px, 0); }
-            to { opacity: 1; transform: translate3d(0, 0, 0); }
-        }
-        .splash-screen {
-            animation: fadeInUp 1s ease-out;
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('splash')">Головна</button>
+        <button class="tab-btn active" onclick="switchTab('splash')">Клуб</button>
         <button class="tab-btn" onclick="switchTab('game')">Запис</button>
-        <button class="tab-btn" onclick="switchTab('history')">Статистика</button>
+        <button class="tab-btn" onclick="switchTab('history')">Рейтинг</button>
     </div>
 
     <div id="splash-tab" class="splash-screen">
         <img src="mafia.jpg" class="splash-img">
         <h1 class="main-title">MAFIA <span>PHUKET</span></h1>
-        <p class="sub-text">Premiere Intellectual Game Club</p>
-        <button class="btn go" onclick="switchTab('game')">Перейти до запису</button>
+        <p class="sub-text">Exclusive Intellectual Club</p>
+        <button class="btn go" onclick="switchTab('game')">Записатися на гру</button>
     </div>
 
     <div id="game-tab" style="display:none;">
         <div class="game-card">
-            <h2>Наступна гра</h2>
+            <h2>Інформація про гру</h2>
             <div class="info-row">📅 Субота, 19:30</div>
             <div class="info-row">📍 Ali BBQ Kathu</div>
-            <div class="info-row">💵 Внесок: 100 THB</div>
+            <div class="info-row">💵 100 THB</div>
         </div>
         
         <div class="btn-group">
@@ -231,13 +132,13 @@
         </div>
 
         <div class="player-list">
-            <div class="list-header">Записані гравці:</div>
+            <div class="list-header">Учасники вечора</div>
             <div id="list">Завантаження...</div>
         </div>
     </div>
 
     <div id="history-tab" style="display:none;">
-        <div id="history-list">Завантаження...</div>
+        <div id="history-list">Завантаження статистики...</div>
     </div>
 
     <script>
@@ -330,8 +231,8 @@
                 data.reverse().forEach(h => {
                     let isWin = h.Result?.toLowerCase() === 'win';
                     hist.innerHTML += `<div class="history-item">
-                        <span style="color:#888; font-size:11px;">${h.Date}</span><br>
-                        <b>${h.Player_Name}</b> (${h.Role}) — <span class="${isWin ? 'win-tag' : 'loss-tag'}">${isWin ? 'ПЕРЕМОГА' : 'ПОРАЗКА'}</span>
+                        <span style="color:#666; font-size:10px; font-weight:800; text-transform:uppercase;">${h.Date}</span><br>
+                        <div style="margin-top:5px; font-weight:600;">${h.Player_Name} (${h.Role}) — <span style="color:${isWin?'#2ecc71':'#e74c3c'}">${isWin ? 'ПЕРЕМОГА' : 'ПОРАЗКА'}</span></div>
                     </div>`;
                 });
             } catch (e) { document.getElementById('history-list').innerHTML = "Помилка статистики"; }
