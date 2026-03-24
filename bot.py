@@ -7,13 +7,15 @@ from aiohttp import web
 # --- НАЛАШТУВАННЯ ---
 TOKEN = "8237013345:AAFrzlZvUyhaXRRFP3FxP1xJ97dp3CuPedE" 
 APP_URL = "https://fallsins.github.io/MafiaPhuket/" 
+# Твоє пряме посилання, яке ти створив у BotFather
+DIRECT_APP_LINK = "https://t.me/phuketmafia_bot/play"
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 # --- ВЕБ-СЕРВЕР ДЛЯ RENDER (АНТИ-СОН) ---
 async def handle(request):
-    return web.Response(text="Бот Mafia Phuket працює!")
+    return web.Response(text="Mafia Phuket Bot is Running!")
 
 async def start_webserver():
     app = web.Application()
@@ -26,20 +28,15 @@ async def start_webserver():
 # --- ОБРОБКА КОМАНДИ /start_game ---
 @dp.message(Command("start_game"))
 async def start_game(message: types.Message):
-    bot_info = await bot.get_me()
-    
-    # Використовуємо універсальну кнопку-посилання для груп
+    # Визначаємо тип чату для вибору правильної кнопки
     if message.chat.type in ["group", "supergroup"]:
-        # Це посилання відкриє додаток прямо в Telegram
-        # Формат: t.me/bot_username/app_name (якщо створено в BotFather)
-        # Або просто посилання на бота з параметром
-        app_link = f"https://t.me/{bot_info.username}?start=webapp"
-        
+        # У ГРУПІ: використовуємо Direct Link (t.me/...)
+        # Це дозволяє відкрити додаток в один клік поверх чату
         markup = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="📝 ЗАПИСАТИСЯ НА ГРУ", url=app_link)]
+            [InlineKeyboardButton(text="📝 ЗАПИСАТИСЯ НА ГРУ", url=DIRECT_APP_LINK)]
         ])
     else:
-        # В особистих повідомленнях залишаємо прямий запуск
+        # В ОСОБИСТИХ: використовуємо стандартний WebAppInfo
         markup = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="📝 ЗАПИСАТИСЯ НА ГРУ", web_app=WebAppInfo(url=APP_URL))]
         ])
@@ -54,7 +51,7 @@ async def start_game(message: types.Message):
     )
 
     try:
-        # Намагаємось відправити з фото
+        # Спроба відправити афішу
         await message.answer_photo(
             photo=f"{APP_URL}mafia.jpg",
             caption=caption,
@@ -62,18 +59,19 @@ async def start_game(message: types.Message):
             parse_mode="Markdown"
         )
     except Exception as e:
-        # Якщо фото не вантажиться, шлемо текст
+        # Якщо фото недоступне — відправляємо текст
         print(f"Photo error: {e}")
         await message.answer(caption, reply_markup=markup, parse_mode="Markdown")
 
-# --- ЗАПУСК ---
+# --- ГОЛОВНИЙ ЗАПУСК ---
 async def main():
+    # Запускаємо веб-сервер, щоб Render не "сипав" помилками 
     asyncio.create_task(start_webserver())
-    print("Бот Mafia Phuket успішно запущений...")
+    print("Бот Mafia Phuket успішно запущений!")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
-        pass
+        print("Бот вимкнений.")
