@@ -27,7 +27,6 @@
             overflow-x: hidden;
         }
 
-        /* GRAIN OVERLAY */
         body::before {
             content: "";
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -40,7 +39,6 @@
             display: flex; justify-content: center; position: sticky; top: 0; z-index: 100;
             background: rgba(10,10,10,0.85); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border); margin-bottom: 30px;
-            position: relative;
         }
         .tab-btn { 
             flex: 1; background: none; border: none; color: var(--text-dim); 
@@ -48,14 +46,8 @@
             text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; 
             cursor: pointer;
         }
-        .tab-btn.active { color: var(--text-main); }
-        .tab-indicator {
-            position: absolute; bottom: 0; left: 0; height: 2px; width: 33.333%;
-            background: var(--accent); transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
-            box-shadow: 0 0 15px var(--accent);
-        }
-
-        /* СТОРІНКИ */
+        .tab-btn.active { color: var(--text-main); border-bottom: 2px solid var(--accent); }
+        
         .page { display: none; flex-direction: column; align-items: center; width: 100%; }
         .page.active { display: flex; animation: pageIn 0.5s ease forwards; }
 
@@ -69,65 +61,44 @@
             width: 85%; max-width: 300px; margin: 20px auto 35px;
             border-radius: 12px; border: 1px solid var(--border);
             box-shadow: 0 0 40px rgba(193, 18, 31, 0.2);
-            animation: glow 4s infinite alternate;
         }
-        @keyframes glow {
-            from { box-shadow: 0 0 20px rgba(193, 18, 31, 0.1); }
-            to { box-shadow: 0 0 50px rgba(193, 18, 31, 0.3); }
-        }
-        .main-title { font-family: 'Playfair Display', serif; font-size: 42px; margin: 0; letter-spacing: -1px; }
+        .main-title { font-family: 'Playfair Display', serif; font-size: 42px; margin: 0; letter-spacing: -1px; text-align: center; }
         .main-title span { color: var(--accent); }
 
-        /* КАРТКА ГРИ */
-        .game-card { 
-            background: var(--card); backdrop-filter: blur(15px);
-            border-radius: 16px; padding: 25px; 
-            margin-bottom: 25px; border: 1px solid var(--border); 
-            text-align: left; width: 100%; box-sizing: border-box;
+        /* П'ЄДЕСТАЛ РЕЙТИНГУ */
+        .top-three { display: flex; justify-content: space-around; align-items: flex-end; width: 100%; margin: 20px 0 40px; }
+        .podium-item { text-align: center; width: 30%; position: relative; }
+        .podium-avatar { 
+            width: 50px; height: 50px; background: #111; border: 2px solid var(--border);
+            border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;
         }
-        .info-label { font-size: 9px; color: var(--accent); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
-        .info-value { font-size: 16px; font-weight: 400; color: #eee; }
+        .place-1 .podium-avatar { width: 75px; height: 75px; border-color: #ffd700; font-size: 35px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+        .place-2 .podium-avatar { border-color: #c0c0c0; }
+        .place-3 .podium-avatar { border-color: #cd7f32; }
+        .podium-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .podium-pts { color: var(--accent); font-weight: 800; font-size: 16px; }
 
-        /* КНОПКИ */
-        .btn-group { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        /* СПИСОК ГРАВЦІВ ТА РЕЙТИНГ */
+        .rank-list { width: 100%; margin-top: 10px; }
+        .rank-item { 
+            display: flex; align-items: center; padding: 15px; background: rgba(255,255,255,0.03);
+            border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border);
+        }
+        .rank-pos { width: 30px; font-size: 10px; font-weight: 800; color: var(--text-dim); }
+        .rank-name-box { flex-grow: 1; }
+        .rank-name { font-size: 14px; font-weight: 400; }
+        .rank-status { font-size: 8px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; display: block; margin-top: 2px; }
+        .rank-score { font-weight: 800; color: var(--accent); }
+
         .btn { 
             width: 100%; padding: 18px 0; border-radius: 10px; border: none; 
             font-weight: 800; font-size: 12px; text-transform: uppercase; 
             letter-spacing: 2px; transition: all 0.3s ease; cursor: pointer;
+            margin: 20px 0;
         }
         .btn.go { background: var(--accent); color: white; box-shadow: 0 8px 20px rgba(193, 18, 31, 0.2); }
-        .btn.maybe { background: transparent; border: 1px solid #333; color: #aaa; }
-        .btn.no { background: transparent; color: #444; font-size: 10px; margin-top: 5px; letter-spacing: 3px; }
-
-        /* СПИСОК ГРАВЦІВ */
-        .player-list { text-align: left; width: 100%; margin-top: 20px; }
-        .list-section-title {
-            font-size: 10px; font-weight: 800; color: var(--text-dim);
-            text-transform: uppercase; letter-spacing: 2px;
-            margin: 30px 0 15px; border-left: 2px solid var(--accent); padding-left: 12px;
-        }
         
-        .player-item { 
-            padding: 15px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px;
-            opacity: 0; animation: itemIn 0.4s ease forwards;
-        }
-
-        @keyframes itemIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .avatar-stub {
-            width: 40px; height: 40px; 
-            background: linear-gradient(135deg, #1a1a1a 0%, #050505 100%);
-            border: 1px solid var(--border); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 11px; font-weight: 800; color: var(--text-dim);
-        }
-        .status-confirmed .avatar-stub { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(193, 18, 31, 0.2); }
-        .status-maybe .avatar-stub { border-color: var(--maybe-color); color: var(--maybe-color); }
-        .player-name { font-weight: 400; font-size: 15px; flex-grow: 1; letter-spacing: 0.3px; }
-        .player-name a { color: inherit; text-decoration: none; cursor: pointer; }
+        .avatar-stub { width: 40px; height: 40px; background: #111; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--text-dim); margin-right: 15px; }
     </style>
 </head>
 <body>
@@ -136,60 +107,105 @@
         <button class="tab-btn active" onclick="switchTab('splash', 0)">Клуб</button>
         <button class="tab-btn" onclick="switchTab('game', 1)">Гра</button>
         <button class="tab-btn" onclick="switchTab('history', 2)">Рейтинг</button>
-        <div class="tab-indicator" id="indicator"></div>
     </div>
 
     <div id="splash-tab" class="page active">
         <img src="mafia.jpg" class="splash-img">
         <h1 class="main-title">MAFIA <span>PHUKET</span></h1>
-        <p style="color: var(--text-dim); font-size: 10px; letter-spacing: 5px; text-transform: uppercase; margin: 15px 0 40px;">Інтелектуально-соціальна гра</p>
-        <button class="btn go" onclick="switchTab('game', 1)">Долучитись до гри</button>
+        <p style="color: var(--text-dim); font-size: 10px; letter-spacing: 5px; text-transform: uppercase; margin: 15px 0 40px;">Елітарний клуб</p>
+        <button class="btn go" onclick="switchTab('game', 1)">Почати гру</button>
     </div>
 
     <div id="game-tab" class="page">
-        <div class="game-card">
-            <div style="margin-bottom:20px;">
-                <div class="info-label">Час</div>
-                <div class="info-value">Субота · 19:30</div>
-            </div>
-            <div style="margin-bottom:20px;">
-                <div class="info-label">Локація</div>
-                <div class="info-value">Ali BBQ Kathu</div>
-            </div>
-            <div>
-                <div class="info-label">Внесок</div>
-                <div class="info-value">100 THB</div>
-            </div>
+        <button class="btn go" onclick="joinGame('ЙДУ')">Я буду на грі</button>
+        <div class="rank-list" id="list">
+            <p style="text-align:center; color:var(--text-dim);">Завантаження списку...</p>
         </div>
-        
-        <div class="btn-group">
-            <button class="btn go" onclick="joinGame('ЙДУ')">Приєднатись</button>
-            <button class="btn maybe" onclick="joinGame('ДУМАЮ')">Не впевнений</button>
-            <button class="btn no" onclick="joinGame('НІ')">Відмовитись</button>
-        </div>
-
-        <div class="player-list" id="list">
-            </div>
     </div>
 
     <div id="history-tab" class="page">
-        <div style="padding: 100px 0; color: var(--text-dim); font-size: 10px; letter-spacing: 4px; text-transform: uppercase;">
-            Рейтинг сезону <br><span style="color:var(--accent)">Незабаром</span>
+        <div id="leaderboard-content" style="width:100%;">
+            <p style="text-align:center; color:var(--text-dim); padding-top:50px;">Оновлюємо рейтинг...</p>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        const API_URL = "https://script.google.com/macros/s/AKfycbx78BBZhgPFEvWa1Nec7wItEEFAWtI8m6G4yCH8DY6oZAnGyGXfOw54LY8CdK09Z36nig/exec";
+
+        // ТВІЙ НОВИЙ URL СКРИПТА
+        const API_URL = "https://script.google.com/macros/s/AKfycbzirzpHztfzNaTDlLmaMbIoodha3ZZvegsxT2TH87ea9H8TcoxSgV8ERW3hNC_1q2-Y6w/exec";
 
         function switchTab(tabId, index) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId + '-tab').classList.add('active');
             document.querySelectorAll('.tab-btn')[index].classList.add('active');
-            document.getElementById('indicator').style.transform = `translateX(${index * 100}%)`;
+            
             if(tabId === 'game') loadPlayers();
+            if(tabId === 'history') loadRanking();
+        }
+
+        async function loadPlayers() {
+            const listDiv = document.getElementById('list');
+            try {
+                let res = await fetch(API_URL);
+                let data = await res.json();
+                let html = '<div style="font-size:10px; font-weight:800; color:var(--text-dim); text-transform:uppercase; margin:20px 0 10px; letter-spacing:2px;">Гравці на сьогодні:</div>';
+                
+                data.filter(p => p.Status === 'ЙДУ').forEach(p => {
+                    let initials = p.Name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    html += `<div class="rank-item">
+                                <div class="avatar-stub">${initials}</div>
+                                <div class="rank-name">${p.Name}</div>
+                             </div>`;
+                });
+                listDiv.innerHTML = html || "<p style='text-align:center; color:var(--text-dim);'>Поки ніхто не записався</p>";
+            } catch (e) { listDiv.innerHTML = "Помилка завантаження списку"; }
+        }
+
+        async function loadRanking() {
+            const container = document.getElementById('leaderboard-content');
+            try {
+                let res = await fetch(API_URL + "?action=getRanking");
+                let players = await res.json();
+                
+                // Сортування за очками
+                players.sort((a, b) => b.Points - a.Points);
+
+                let html = `
+                    <div class="top-three">
+                        <div class="podium-item place-2">
+                            <div class="podium-avatar">🥈</div>
+                            <div class="podium-name">${players[1]?.Name || '-'}</div>
+                            <div class="podium-pts">${players[1]?.Points || 0}</div>
+                        </div>
+                        <div class="podium-item place-1">
+                            <div class="podium-avatar">🥇</div>
+                            <div class="podium-name">${players[0]?.Name || '-'}</div>
+                            <div class="podium-pts">${players[0]?.Points || 0}</div>
+                        </div>
+                        <div class="podium-item place-3">
+                            <div class="podium-avatar">🥉</div>
+                            <div class="podium-name">${players[2]?.Name || '-'}</div>
+                            <div class="podium-pts">${players[2]?.Points || 0}</div>
+                        </div>
+                    </div>
+                    <div class="rank-list">`;
+
+                players.slice(3).forEach((p, i) => {
+                    html += `
+                        <div class="rank-item">
+                            <div class="rank-pos">${i + 4}</div>
+                            <div class="rank-name-box">
+                                <span class="rank-name">${p.Name}</span>
+                                <span class="rank-status">${p.Status || ''}</span>
+                            </div>
+                            <div class="rank-score">${p.Points}</div>
+                        </div>`;
+                });
+                container.innerHTML = html + "</div>";
+            } catch (e) { container.innerHTML = "Помилка завантаження рейтингу"; }
         }
 
         async function joinGame(status) {
@@ -200,51 +216,13 @@
                     ID: String(user?.id || Date.now()),
                     Name: user ? (user.first_name + " " + (user.last_name || "")) : "Гість",
                     Status: status,
-                    Username: user?.username ? "@" + user.username : ""
+                    Username: user?.username || ""
                 })
             });
-            setTimeout(loadPlayers, 800);
+            switchTab('game', 1);
         }
 
-        async function loadPlayers() {
-            try {
-                let res = await fetch(API_URL);
-                let data = await res.json();
-                let list = document.getElementById('list');
-                let going = data.filter(p => p.Status === 'ЙДУ');
-                let maybe = data.filter(p => p.Status === 'ДУМАЮ');
-                
-                let html = `<div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:var(--text-dim); text-transform:uppercase; letter-spacing:2px; margin-bottom:20px;">
-                                <span>Гравці</span>
-                                <span style="color:var(--accent)">${going.length} / 15</span>
-                            </div>`;
-
-                if (going.length > 0) {
-                    html += `<div class="list-section-title">Підтвердили</div>`;
-                    going.forEach((p, i) => {
-                        let initials = p.Name.split(' ').filter(n => n).map(n => Array.from(n)[0]).join('').toUpperCase().substring(0, 2);
-                        html += `<div class="player-item status-confirmed" style="animation-delay: ${i * 0.05}s">
-                                    <div class="avatar-stub">${initials}</div>
-                                    <div class="player-name"><a onclick="tg.openTelegramLink('https://t.me/${p.Username.replace('@','')}')">${p.Name}</a></div>
-                                 </div>`;
-                    });
-                }
-
-                if (maybe.length > 0) {
-                    html += `<div class="list-section-title" style="border-color:var(--maybe-color)">У роздумах</div>`;
-                    maybe.forEach((p, i) => {
-                        let initials = p.Name.split(' ').filter(n => n).map(n => Array.from(n)[0]).join('').toUpperCase().substring(0, 2);
-                        html += `<div class="player-item status-maybe" style="animation-delay: ${(going.length + i) * 0.05}s">
-                                    <div class="avatar-stub">${initials}</div>
-                                    <div class="player-name"><a>${p.Name}</a></div>
-                                 </div>`;
-                    });
-                }
-
-                list.innerHTML = html || "<div style='color:#444; padding:40px; text-align:center;'>Список порожній</div>";
-            } catch (e) { list.innerHTML = "Помилка..."; }
-        }
-        window.onload = () => document.getElementById('indicator').style.transform = `translateX(0%)`;
+        window.onload = () => loadRanking();
     </script>
 </body>
 </html>
